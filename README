@@ -1,0 +1,1 @@
+This is a python API that executes a Shell Script file from the host machine to another machine on the same network. The other machine is identified by its IP address. The user enters the IP and script to execute on the other machine.
