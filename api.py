@@ -20,11 +20,10 @@ try:
 	# connect to target machine via SSH
 
 	while True:
-		print("Files in ShellScripts Directory: ")
-		stdin, stdout, stderr = ssh.exec_command("cd ShellScripts; ls *.sh")
-		for line in stdout.readlines():
-			print(f"{line}")
-		# changes directory to ShellScripts directory and lists all the scripts on separate lines
+		print("Scripts in Current Directory: ")
+		for line in os.popen("ls *.sh").readlines():
+			print(line)
+		# prints list of all script files from the ShellScripts Directory on manager vm
 
 		command = input("> ")
 		start_time = time.time()
@@ -34,18 +33,20 @@ try:
 			break
 			# close program if command entered equals quit or exit
 		else:
-			stdin, stdout, stderr = ssh.exec_command("cd ShellScripts; sh ./" + command)
+			script = os.popen(f"cat {command}").read()
+			stdin, stdout, stderr = ssh.exec_command(script)
+
 			if stdout:
 				for line in stdout.readlines():
-					print(f"Output: {line}")
+					print(line)
 				# prints output of running script
 			if stderr:
 				for line in stderr.readlines():
-					print(f"Error: {line}")
+					print(line)
 				# prints errors while running the script
 
-				print(f"Task took {time.time() - start_time} seconds to execute\n")
-				# prints total time to execute each command/task
+			print(f"Task took {time.time() - start_time} seconds to execute\n")
+			# prints total time to execute each command/task
 
 except paramiko.ssh_exception.NoValidConnectionsError:
 	print(f"Couldn't find machine with IP: {host}")
