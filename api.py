@@ -23,7 +23,7 @@ try:
 		print("Scripts in Current Directory: ")
 		for line in os.popen("ls *.sh").readlines():
 			print(line)
-		# prints list of all script files from the ShellScripts Directory on manager vm
+		# prints list of all script files from the current directory on manager vm
 
 		command = input("> ")
 		start_time = time.time()
@@ -35,6 +35,7 @@ try:
 		else:
 			script = os.popen(f"cat {command}").read()
 			stdin, stdout, stderr = ssh.exec_command(script)
+			# runs scripts from manager vm to worker vm
 
 			if stdout:
 				for line in stdout.readlines():
