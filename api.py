@@ -3,6 +3,7 @@ import getpass
 import socket
 import os
 import time
+import scp
 
 os.system("clear")
 # command to clear screen
@@ -33,8 +34,14 @@ try:
 			break
 			# close program if command entered equals quit or exit
 		else:
-			script = os.popen(f"cat {command}").read()
-			stdin, stdout, stderr = ssh.exec_command(script)
+			file = scp.SCPClient(ssh.get_transport())
+			values = command.split(" ")
+			# splits the command on every space
+
+			file.put(f"{values[0]}", ".")
+			# copies script by name from manager to worker vm
+
+			stdin, stdout, stderr = ssh.exec_command(f"sh ./{command}")
 			# runs scripts from manager vm to worker vm
 
 			if stdout:
@@ -48,6 +55,9 @@ try:
 
 			print(f"Task took {time.time() - start_time} seconds to execute\n")
 			# prints total time to execute each command/task
+
+			stdin, stdout, stderr = ssh.exec_command(f"rm {values[0]}")
+			# deletes copied script from worker vm
 
 except paramiko.ssh_exception.NoValidConnectionsError:
 	print(f"Couldn't find machine with IP: {host}")
@@ -64,3 +74,7 @@ except socket.gaierror:
 except paramiko.ssh_exception.AuthenticationException:
 	print(f"Authentication failed for IP: {host}")
 	# print error if username or password entered is incorrect
+
+except FileNotFoundError:
+	print("Script doesnt exist, please enter a valid script")
+	# print error is script entered isnt found
